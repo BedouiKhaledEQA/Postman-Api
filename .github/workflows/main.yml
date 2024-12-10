@@ -1,42 +1,30 @@
-name: Run Postman Tests 
+name: Run Postman Tests
 
 on:
   push:
     branches:
       - main
   pull_request:
-  workflow_dispatch: # Permet le déclenchement manuel
+  workflow_dispatch:
 
 jobs:
   postman-tests:
     runs-on: ubuntu-latest
 
     steps:
-    # Étape 1 : Vérification du code
     - name: Checkout code
       uses: actions/checkout@v3
 
-    # Étape 2 : Installer Node.js
     - name: Set up Node.js
       uses: actions/setup-node@v3
       with:
         node-version: 16
 
-    # Étape 3 : Installer Newman
-    - name: Install Newman
-      run: npm install -g newman
-
-    # Étape 4 : Installer json-server
-    - name: Install JSON Server
-      run: npm install -g json-server
-
-    # Étape 5 : Démarrer JSON Server
-    - name: Start JSON Server
+    - name: Install Newman and htmlextra reporter
       run: |
-        json-server db.json --port 3000 &
-        sleep 5
+        npm install -g newman
+        npm install -g newman-reporter-htmlextra
 
-    # Étape 6 : Exécuter la collection Postman
     - name: Run Postman Collection
       run: |
         mkdir -p newman-reports
@@ -45,20 +33,13 @@ jobs:
         --reporters cli,htmlextra \
         --reporter-htmlextra-export newman-reports/newman-report.html
 
-    # Étape 7 : Vérifier si le fichier est généré
-    - name: Check report existence
+    - name: Debug report generation
       run: |
-        if [ -f newman-reports/newman-report.html ]; then
-          echo "Report file exists."
-        else
-          echo "Report file does not exist."
-          exit 1
-        fi
+        echo "Listing files in newman-reports directory:"
+        ls -la newman-reports || echo "Directory newman-reports does not exist."
 
-    # Étape 8 : Déployer sur GitHub Pages
-    - name: Deploy report to GitHub Pages
-      uses: peaceiris/actions-gh-pages@v3
+    - name: Upload HTML Report
+      uses: actions/upload-artifact@v3
       with:
-        personal_token: ${{ secrets.APITOKEN }}
-        publish_branch: gh-pages
-        publish_dir: newman-reports # Répertoire contenant le fichier HTML
+        name: newman-report
+        path: newman-reports/newman-report.html
