@@ -30,6 +30,6 @@ jobs:
     - name: Run Postman Collection
       run: |
         newman run collection.json \
-        --environment localy.json \
+        --environment local.json \
         --reporters cli,json \
         --reporter-json-export results.json
