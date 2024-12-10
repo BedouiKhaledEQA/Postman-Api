@@ -57,4 +57,4 @@ jobs:
       with:
         personal_token: ${{ secrets.APITOKEN }}  # Utilisation de ton token personnalisé
         publish_branch: gh-pages  # Branche cible pour GitHub Pages
-        publish_dir: .  # Le répertoire qui contient le fichier HTML (ici le répertoire courant)
+        publish_dir: gh-pages # Le répertoire qui contient le fichier HTML (ici le répertoire courant)
