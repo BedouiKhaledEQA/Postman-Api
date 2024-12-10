@@ -1,4 +1,4 @@
-name: Run Postman Tests
+name: Run Postman Tests 
 
 on:
   push:
@@ -33,28 +33,32 @@ jobs:
     # Étape 5 : Démarrer JSON Server
     - name: Start JSON Server
       run: |
-        json-server db.json --port 3000 & # Démarrage de JSON Server en arrière-plan
-        sleep 5 # Attendre que le serveur soit opérationnel
-        
+        json-server db.json --port 3000 &
+        sleep 5
+
     # Étape 6 : Exécuter la collection Postman
     - name: Run Postman Collection
       run: |
+        mkdir -p newman-reports
         newman run collection.json \
         --environment local.json \
         --reporters cli,htmlextra \
-        --reporter-htmlextra-export newman-report.html # Exporter le rapport HTML
-        
-    # Étape 7 : Sauvegarder le rapport HTML comme artefact
-    - name: Upload HTML Report
-      uses: actions/upload-artifact@v3
-      with:
-        name: newman-report
-        path: newman-report.html
+        --reporter-htmlextra-export newman-reports/newman-report.html
 
-    # Étape 8 : Déployer le rapport HTML sur GitHub Pages
+    # Étape 7 : Vérifier si le fichier est généré
+    - name: Check report existence
+      run: |
+        if [ -f newman-reports/newman-report.html ]; then
+          echo "Report file exists."
+        else
+          echo "Report file does not exist."
+          exit 1
+        fi
+
+    # Étape 8 : Déployer sur GitHub Pages
     - name: Deploy report to GitHub Pages
       uses: peaceiris/actions-gh-pages@v3
       with:
-        personal_token: ${{ secrets.APITOKEN }}  # Utilisation de ton token personnalisé
-        publish_branch: gh-pages  # Branche cible pour GitHub Pages
-        publish_dir: gh-pages # Le répertoire qui contient le fichier HTML (ici le répertoire courant)
+        personal_token: ${{ secrets.APITOKEN }}
+        publish_branch: gh-pages
+        publish_dir: newman-reports # Répertoire contenant le fichier HTML
