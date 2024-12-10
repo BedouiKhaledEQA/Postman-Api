@@ -43,7 +43,7 @@ jobs:
         newman run collection.json \
         --environment local.json \
         --reporters cli,htmlextra \
-        --reporter-htmlextra-export newman-reports/newman-report.html
+        --reporter-htmlextra-export newman-report.html
 
     # Étape 7 : Sauvegarder le rapport HTML comme artefact
     - name: Upload HTML Report
@@ -58,4 +58,4 @@ jobs:
       with:
         personal_token: ${{ secrets.APITOKEN }} # Ton token GitHub
         publish_branch: gh-pages
-        publish_dir: newman-reports # Répertoire contenant le rapport HTML
+        publish_dir: ./ # Répertoire contenant le rapport HTML
