@@ -26,13 +26,22 @@ jobs:
     - name: Install Newman
       run: npm install -g newman
 
-    # Étape 4 : Exécuter la collection Postman avec rapport HTML
+    # Étape 4 : Installer json-server
+    - name: Install JSON Server
+      run: npm install -g json-server
+
+    # Étape 5 : Démarrer JSON Server
+    - name: Start JSON Server
+      run: |
+        json-server db.json --port 3000 &
+        sleep 5 # Attendre que le serveur soit opérationnel
+    # Étape 6 : Exécuter la collection Postman
     - name: Run Postman Collection
       run: |
         newman run collection.json \
         --environment local.json \
-        --reporters cli,htmlextra \
-        --reporter-htmlextra-export newman-report.html
+        --reporters cli,json \
+        --reporter-json-export results.json
 
     # Étape 5 : Sauvegarder le rapport HTML comme artefact
     - name: Upload HTML Report
