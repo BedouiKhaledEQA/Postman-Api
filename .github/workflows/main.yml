@@ -1,4 +1,4 @@
-name: Run Postman Tests 
+name: Run Postman Tests
 
 on:
   push:
@@ -26,7 +26,7 @@ jobs:
     - name: Install Newman
       run: npm install -g newman
 
-    # Étape 4 : Installer JSON Server
+    # Étape 4 : Installer json-server
     - name: Install JSON Server
       run: npm install -g json-server
 
@@ -44,9 +44,15 @@ jobs:
         --reporters cli,htmlextra \
         --reporter-htmlextra-export newman-report.html # Exporter le rapport HTML
         
-    # Étape 7 : Vérifier que le rapport est bien généré
-    - name: List files after running Postman collection
-      run: ls -alh
+    # Étape 7 : Vérification de l'existence du rapport
+    - name: Check if report exists
+      run: |
+        if [ -f newman-report.html ]; then
+          echo "Report file exists"
+        else
+          echo "Report file does not exist"
+          exit 1
+        fi
 
     # Étape 8 : Sauvegarder le rapport HTML comme artefact
     - name: Upload HTML Report
@@ -62,5 +68,3 @@ jobs:
         personal_token: ${{ secrets.APITOKEN }}  # Utilisation de ton token personnalisé
         publish_branch: gh-pages  # Branche cible pour GitHub Pages
         publish_dir: .  # Le répertoire qui contient le fichier HTML (ici le répertoire courant)
-        user_name: "GitHub Actions"  # Nom de l'utilisateur pour les commits
-        user_email: "actions@github.com"  # Email de l'utilisateur pour les commits
