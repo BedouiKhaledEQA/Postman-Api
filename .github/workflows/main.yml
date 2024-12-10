@@ -1,0 +1,45 @@
+name: Run Postman Tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch: # Permet le déclenchement manuel
+
+jobs:
+  postman-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Étape 1 : Vérification du code
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    # Étape 2 : Installer Node.js
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: 16
+
+    # Étape 3 : Installer Newman
+    - name: Install Newman
+      run: npm install -g newman
+
+    # Étape 4 : Installer json-server
+    - name: Install JSON Server
+      run: npm install -g json-server
+
+    # Étape 5 : Démarrer JSON Server
+    - name: Start JSON Server
+      run: |
+        json-server db.json --port 3000 &
+        sleep 5 # Attendre que le serveur soit opérationnel
+
+    # Étape 6 : Exécuter la collection Postman
+    - name: Run Postman Collection
+      run: |
+        newman run collection.json \
+        --environment local.json \
+        --reporters cli,json \
+        --reporter-json-export results.json
