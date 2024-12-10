@@ -26,7 +26,7 @@ jobs:
     - name: Install Newman
       run: npm install -g newman
 
-    # Étape 4 : Installer json-server
+    # Étape 4 : Installer JSON Server
     - name: Install JSON Server
       run: npm install -g json-server
 
@@ -58,3 +58,5 @@ jobs:
         personal_token: ${{ secrets.APITOKEN }}  # Utilisation de ton token personnalisé
         publish_branch: gh-pages  # Branche cible pour GitHub Pages
         publish_dir: .  # Le répertoire qui contient le fichier HTML (ici le répertoire courant)
+        user_name: "GitHub Actions"  # Nom de l'utilisateur pour les commits
+        user_email: "actions@github.com"  # Email de l'utilisateur pour les commits
