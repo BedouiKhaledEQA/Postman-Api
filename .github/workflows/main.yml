@@ -5,7 +5,7 @@ on:
     branches:
       - main
   pull_request:
-  workflow_dispatch: # Permet le déclenchement manuel
+  workflow_dispatch:  # Permet le déclenchement manuel
 
 jobs:
   postman-tests:
@@ -22,14 +22,22 @@ jobs:
       with:
         node-version: 16
 
-    # Étape 3 : Installer Newman
-    - name: Install Newman
-      run: npm install -g newman
+    # Étape 3 : Installer Newman et le reporter HTML extra (si nécessaire)
+    - name: Install dependencies
+      run: |
+        npm install -g newman
+        npm install -g newman-reporter-htmlextra
 
     # Étape 4 : Exécuter la collection Postman
     - name: Run Postman Collection
       run: |
         newman run collection.json \
-        --environment local.json \
-        --reporters cli,json \
+        -e local.json \
+        -r htmlextra,cli,json \
+        --reporter-htmlextra-export results.html \
         --reporter-json-export results.json
+
+    # Étape 5 : Ajouter un step pour afficher les résultats HTML
+    - name: Display HTML report (optional)
+      run: |
+        cat results.html
