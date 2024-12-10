@@ -33,19 +33,28 @@ jobs:
     # Étape 5 : Démarrer JSON Server
     - name: Start JSON Server
       run: |
-        json-server db.json --port 3000 &
+        json-server db.json --port 3000 & # Démarrage de JSON Server en arrière-plan
         sleep 5 # Attendre que le serveur soit opérationnel
+
     # Étape 6 : Exécuter la collection Postman
     - name: Run Postman Collection
       run: |
         newman run collection.json \
         --environment local.json \
-        --reporters cli,json \
-        --reporter-json-export results.json
+        --reporters cli,htmlextra \
+        --reporter-htmlextra-export newman-report.html # Exporter le rapport HTML
 
-    # Étape 5 : Sauvegarder le rapport HTML comme artefact
+    # Étape 7 : Sauvegarder le rapport HTML comme artefact
     - name: Upload HTML Report
       uses: actions/upload-artifact@v3
       with:
         name: newman-report
         path: newman-report.html
+
+    # Étape 8 : Déployer le rapport HTML sur GitHub Pages
+    - name: Deploy report to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        personal_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_branch: gh-pages  # Branche cible pour GitHub Pages
+        publish_dir: .  # Le répertoire qui contient le fichier HTML
