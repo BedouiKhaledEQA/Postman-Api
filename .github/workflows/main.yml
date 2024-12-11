@@ -43,7 +43,7 @@ jobs:
         newman run collection.json \
         --environment local.json \
         --reporters cli,htmlextra \
-        --reporter-htmlextra-export newman-report1.html
+        --reporter-htmlextra-export newman-reports/newman-report1.html
 
     # Étape 7 : Sauvegarder le rapport HTML comme artefact
     - name: Upload HTML Report
@@ -52,10 +52,14 @@ jobs:
         name: newman-report
         path: newman-reports/newman-report1.html
 
-    # Étape 8 : Déployer le rapport HTML sur GitHub Pages
+    # Étape 8 : Renommer le rapport HTML en index.html
+    - name: Rename report to index.html
+      run: mv newman-reports/newman-report1.html newman-reports/index.html
+
+    # Étape 9 : Déployer le rapport HTML sur GitHub Pages
     - name: Deploy report to GitHub Pages
       uses: peaceiris/actions-gh-pages@v3
       with:
         personal_token: ${{ secrets.APITOKEN }} # Ton token GitHub
         publish_branch: gh-pages
-        publish_dir: ./ # Répertoire contenant le rapport HTML
+        publish_dir: newman-reports # Répertoire contenant le rapport HTML
